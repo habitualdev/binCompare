@@ -2,38 +2,38 @@ package main
 
 import (
 	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/widget"
+	"github.com/roaldi/gobinviz"
+	dia "github.com/sqweek/dialog"
 	"image"
 	"image/color"
 	"io/ioutil"
-	"github.com/roaldi/gobinviz"
-	"fyne.io/fyne/v2/app"
-	"fyne.io/fyne/v2/widget"
-	dia "github.com/sqweek/dialog"
 	"strconv"
 )
 
 var (
-	fileA string
-	fileB string
-	imgA image.Image
-	imgB image.Image
-	update = make(chan bool,1024)
+	fileA     string
+	fileB     string
+	imgA      image.Image
+	imgB      image.Image
+	update    = make(chan bool, 1024)
 	distances string
 )
 
 func main() {
 
 	imgPlaceholder := image.NewRGBA(image.Rect(0, 0, 100, 100))
-		// Colors are defined by Red, Green, Blue, Alpha uint8 values.
-		cyan := color.RGBA{100, 200, 200, 0xff}
+	// Colors are defined by Red, Green, Blue, Alpha uint8 values.
+	cyan := color.RGBA{100, 200, 200, 0xff}
 
 	// Set color for each pixel.
 	for x := 0; x < 100; x++ {
 		for y := 0; y < 100; y++ {
 			switch {
-			case x < 100/2 && y <100/2: // upper left quadrant
+			case x < 100/2 && y < 100/2: // upper left quadrant
 				imgPlaceholder.Set(x, y, cyan)
 			case x >= 100/2 && y >= 100/2: // lower right quadrant
 				imgPlaceholder.Set(x, y, color.White)
@@ -55,12 +55,9 @@ func main() {
 		process()
 	})
 
-
-
-
 	a := app.New()
 	w := a.NewWindow("Binary Image Comparison")
-	go func(){
+	go func() {
 		for {
 			localUpdate := <-update
 			if localUpdate {
@@ -70,19 +67,23 @@ func main() {
 				fileBImage.SetMinSize(fyne.NewSize(float32(imgB.Bounds().Size().X), float32(imgB.Bounds().Size().Y)))
 				renderA := widget.NewFormItem("", fileAImage)
 				renderB := widget.NewFormItem("", fileBImage)
-				w.SetContent(container.NewVBox(widget.NewForm(renderA,renderB),fileAButton,fileBButton,processButton,widget.NewLabel(distances)))
+				w.SetContent(container.NewVBox(widget.NewForm(renderA, renderB), fileAButton, fileBButton, processButton, widget.NewLabel(distances)))
 			}
 		}
 	}()
 	w.SetContent(container.NewVBox(widget.NewLabel("test"),
-		widget.NewForm(fileAWidget,fileBWidget),
+		widget.NewForm(fileAWidget, fileBWidget),
 		fileAButton,
 		fileBButton,
-		processButton,))
+		processButton))
 	w.ShowAndRun()
 }
 
 func process() {
+	if fileA == "" || fileB == "" {
+		go dia.Message("2 files not selected, binaries not processed")
+		return
+	}
 	byteData, _ := ioutil.ReadFile(fileA)
 	r, _ := binviz.ProcessBinary(byteData)
 	imgA = r.Image
