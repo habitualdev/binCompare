@@ -63,11 +63,12 @@ func main() {
 			if localUpdate {
 				fileAImage := canvas.NewImageFromImage(imgA)
 				fileBImage := canvas.NewImageFromImage(imgB)
-				fileAImage.SetMinSize(fyne.NewSize(float32(imgA.Bounds().Size().X), float32(imgA.Bounds().Size().Y)))
-				fileBImage.SetMinSize(fyne.NewSize(float32(imgB.Bounds().Size().X), float32(imgB.Bounds().Size().Y)))
+				fileAImage.SetMinSize(fyne.NewSize(float32(imgA.Bounds().Size().X)/4, float32(imgA.Bounds().Size().Y)/4))
+				fileBImage.SetMinSize(fyne.NewSize(float32(imgB.Bounds().Size().X)/4, float32(imgB.Bounds().Size().Y)/4))
+
 				renderA := widget.NewFormItem("", fileAImage)
 				renderB := widget.NewFormItem("", fileBImage)
-				w.SetContent(container.NewVBox(widget.NewForm(renderA, renderB), fileAButton, fileBButton, processButton, widget.NewLabel(distances)))
+				w.SetContent(container.NewVBox(container.NewHBox(widget.NewForm(renderA), widget.NewForm(renderB)), fileAButton, fileBButton, processButton, widget.NewLabel(distances)))
 			}
 		}
 	}()
