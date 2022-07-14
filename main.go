@@ -6,7 +6,7 @@ import (
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
-	"github.com/roaldi/gobinviz"
+	"github.com/habitualdev/gobinviz"
 	dia "github.com/sqweek/dialog"
 	"image"
 	"image/color"
